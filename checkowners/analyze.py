@@ -116,7 +116,12 @@ def _build_path_ownerships(
         path_blame = blame_coverage.get(path, {})
         path_review = review_coverage.get(path, {})
         entries = _score_owners(
-            qualified, path_blame, path_review, max_commits, config.scoring, now
+            qualified,
+            path_blame,
+            path_review,
+            max_commits=max_commits,
+            scoring=config.scoring,
+            now=now,
         )
         filtered = tuple(e for e in entries if e.confidence >= config.analysis.confidence_threshold)
         if not filtered:
@@ -136,6 +141,7 @@ def _score_owners(
     qualified: dict[str, _Contribution],
     path_blame: dict[str, float],
     path_review: dict[str, float],
+    *,
     max_commits: int,
     scoring: ScoringConfig,
     now: datetime,

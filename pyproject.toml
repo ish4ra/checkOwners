@@ -110,7 +110,7 @@ select = [
 ]
 # PLR complexity metrics (arg counts, magic values, statement counts) follow
 # the CLI and dataclass surfaces; ratcheting them is not a safety win.
-ignore = ["PLR0913", "PLR2004", "PLR0915", "PLR0911", "PLR0912"]
+ignore = ["PLR0913", "PLR0917", "PLR2004", "PLR0915", "PLR0911", "PLR0912"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
