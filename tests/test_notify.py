@@ -212,7 +212,7 @@ def test_send_notification_critical_signal_overrides_low_delta() -> None:
     drift = _drift_with(delta=0.05, qualified_owner_count=1)
     captured: list[bytes] = []
 
-    def _capture(req: urllib.request.Request, timeout: float) -> MagicMock:
+    def _capture(req: urllib.request.Request, timeout: float) -> MagicMock:  # noqa: ARG001
         captured.append(req.data)
         return MagicMock()
 

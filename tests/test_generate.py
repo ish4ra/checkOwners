@@ -260,7 +260,7 @@ def test_collect_unowned_paths() -> None:
     assert _collect_unowned_paths(ownership) == ["/a.py"]
 
 
-def test_team_resolution_collapses_owner_set(tmp_path: Path) -> None:
+def test_team_resolution_collapses_owner_set() -> None:
     config = Config(
         analysis=AnalysisConfig(confidence_threshold=0.0),
         github=GithubConfig(org="acme", resolve_teams=True),
@@ -269,8 +269,8 @@ def test_team_resolution_collapses_owner_set(tmp_path: Path) -> None:
         {"src/main.py": (_entry("@alice", 0.9), _entry("@bob", 0.8))},
     )
     with patch(
-        "checkowners.github.create_team_resolver",
-        return_value=lambda owners: "@acme/backend",
+        "checkowners.generate.create_team_resolver",
+        return_value=lambda _owners: "@acme/backend",
     ):
         content = _build_codeowners_content(ownership, config, token="t", org="acme")
     assert "/src/main.py @acme/backend" in content

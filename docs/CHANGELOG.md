@@ -9,6 +9,12 @@ Each dated heading is the UTC calendar day that version was published to PyPI (`
 ## [Unreleased]
 
 ### Added
+- pytest `--cov-fail-under=85` so CI fails below the documented coverage
+  floor. Branch coverage is collected repo-wide and reported for
+  `patterns.py`, `analyze.py`, `drift.py`, and `generate.py`.
+- Ruff enables `S` (bandit), `PTH` (pathlib), `RUF`, `C4`, `PL`, `ARG`,
+  `TID`, and `ERA`.
+- Coverage badge on the README pointing at `smusali/checkowners`.
 - Composite Action input `max_output_entries` (default 50) caps each list
   in the `GITHUB_OUTPUT` summaries. Full `drift.json`, `bus_factor.json`,
   and `decay.json` payloads are uploaded as the `checkowners-reports`

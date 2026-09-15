@@ -141,7 +141,7 @@ def _fetch_review_counts(client: Github, repo_full_name: str) -> tuple[dict[str,
                 handle = f"@{review.user.login}" if review.user else None
                 if handle:
                     counts[handle] = counts.get(handle, 0) + 1
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return {}, f"GitHub API error: {exc}"
     if not counts:
         return {}, f"no PR reviews found in the last {_MAX_CLOSED_PRS} closed PRs"

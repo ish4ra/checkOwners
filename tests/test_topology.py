@@ -125,7 +125,7 @@ def test_cluster_disconnected_subgraphs() -> None:
         "e": set(),
     }
     clusters = _cluster(adjacency)
-    cluster_sets = [c for c in clusters]
+    cluster_sets = list(clusters)
     assert {"a", "b"} in cluster_sets
     assert {"c", "d"} in cluster_sets
     assert {"e"} in cluster_sets

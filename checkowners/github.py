@@ -46,7 +46,7 @@ def get_github_client(token: str) -> Github | None:
     if not token:
         return None
     try:
-        from github import Github as GithubClient
+        from github import Github as GithubClient  # noqa: PLC0415
     except ImportError:
         logger.warning(
             "PyGithub is not installed; GitHub API features are disabled. "
@@ -192,7 +192,7 @@ def _gather_review_counts_by_path(
                 per_path = result.setdefault(changed.filename, {})
                 for login in reviewers:
                     per_path[login] = per_path.get(login, 0) + 1
-    except Exception:  # noqa: BLE001
+    except Exception:
         logger.warning("Failed to gather review coverage for %s", repo_full_name)
         return {}
     return result

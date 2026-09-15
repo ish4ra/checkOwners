@@ -37,8 +37,12 @@ def _request(
     payload: dict[str, str] | None = None,
 ) -> object:
     url = f"{_api_root()}{path}"
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        msg = f"GitHub API URL scheme {parsed.scheme!r} is not http or https"
+        raise ValueError(msg)
     data = None if payload is None else json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
+    req = urllib.request.Request(  # noqa: S310  # scheme restricted to http/https above
         url,
         data=data,
         method=method,
@@ -49,7 +53,7 @@ def _request(
             "Content-Type": "application/json",
         },
     )
-    with urllib.request.urlopen(req, timeout=30) as resp:  # noqa: S310
+    with urllib.request.urlopen(req, timeout=30) as resp:  # noqa: S310  # scheme restricted to http/https above
         body = resp.read()
     if not body:
         return None

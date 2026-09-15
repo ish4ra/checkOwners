@@ -11,7 +11,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from typer.testing import CliRunner
 
-from checkowners.cli import app
+from checkowners import __version__
+from checkowners.cli import _merge_identities, app
 from checkowners.models import (
     DecayWarning,
     DriftEntry,
@@ -21,6 +22,7 @@ from checkowners.models import (
     PathOwnership,
 )
 from checkowners.trends import TrendPoint, TrendReport
+from checkowners.validate import ValidationError
 
 runner = CliRunner()
 
@@ -190,8 +192,6 @@ def test_validate_valid() -> None:
 
 
 def test_validate_errors() -> None:
-    from checkowners.validate import ValidationError
-
     errors = [ValidationError(line_number=3, line="bad", message="bad line")]
     with patch("checkowners.cli.validate_codeowners", return_value=errors), _MOCK_PATH:
         result = runner.invoke(app, ["validate"])
@@ -208,8 +208,6 @@ def test_validate_json_valid() -> None:
 
 
 def test_validate_json_errors() -> None:
-    from checkowners.validate import ValidationError
-
     errors = [ValidationError(line_number=1, line="x", message="oops")]
     with patch("checkowners.cli.validate_codeowners", return_value=errors), _MOCK_PATH:
         result = runner.invoke(app, ["validate", "--json"])
@@ -372,7 +370,7 @@ def test_github_action_fails_on_drift_and_writes_output(tmp_path: Path) -> None:
     assert "decay_summary=" in written
 
 
-def test_github_action_no_fail_flag(tmp_path: Path) -> None:
+def test_github_action_no_fail_flag() -> None:
     with (
         patch("checkowners.cli.analyze_ownership", return_value=_OWNERSHIP),
         patch("checkowners.cli.detect_drift", return_value=_DRIFT_DETECTED),
@@ -453,16 +451,12 @@ def test_trends_json() -> None:
 
 
 def test_version_flag() -> None:
-    from checkowners import __version__
-
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
     assert __version__ in result.stdout
 
 
 def test_merge_identities_dedupes_same_handle() -> None:
-    from checkowners.cli import _merge_identities
-
     noreply = "1+a@users.noreply.github.com"
     entries = (
         OwnerEntry(handle="a@x.com", confidence=0.9, last_commit=None, commits=4),
@@ -505,8 +499,6 @@ def test_generate_refuses_handwritten_before_analyzing(tmp_path: Path) -> None:
 
 def test_validate_errors_render_brackets_verbatim() -> None:
     """Rich markup must not swallow [segments] from user paths."""
-    from checkowners.validate import ValidationError
-
     errors = [
         ValidationError(
             line_number=7,

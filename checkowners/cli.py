@@ -586,16 +586,16 @@ def sync(json_output: JsonOption = False, force: ForceOption = False) -> None:
             console.print(f"[green]{rel_path} is already in sync; nothing to commit.[/green]")
         return
     try:
-        subprocess.run(
-            ["git", "add", str(rel_path)],
-            cwd=str(repo_root),
+        subprocess.run(  # noqa: S603  # literal git argv, no shell
+            ["git", "add", str(rel_path)],  # noqa: S607  # git from PATH; path is in-repo
+            cwd=repo_root,
             check=True,
             capture_output=True,
             text=True,
         )
         subprocess.run(
-            ["git", "commit", "-m", "chore: sync CODEOWNERS via checkowners"],
-            cwd=str(repo_root),
+            ["git", "commit", "-m", "chore: sync CODEOWNERS via checkowners"],  # noqa: S607  # git from PATH; argv is a literal list
+            cwd=repo_root,
             check=True,
             capture_output=True,
             text=True,
@@ -614,9 +614,9 @@ def sync(json_output: JsonOption = False, force: ForceOption = False) -> None:
 def _has_uncommitted_changes(repo_root: Path, rel_path: Path) -> bool:
     """True when the generated file differs from what is committed."""
     try:
-        result = subprocess.run(
-            ["git", "status", "--porcelain", "--", str(rel_path)],
-            cwd=str(repo_root),
+        result = subprocess.run(  # noqa: S603  # literal git argv, no shell
+            ["git", "status", "--porcelain", "--", str(rel_path)],  # noqa: S607  # git from PATH; path follows --
+            cwd=repo_root,
             check=True,
             capture_output=True,
             text=True,
@@ -631,7 +631,7 @@ def _write_github_outputs(outputs: dict[str, Any]) -> None:
     output_file = os.environ.get("GITHUB_OUTPUT")
     if not output_file:
         return
-    with open(output_file, "a", encoding="utf-8") as fh:
+    with Path(output_file).open("a", encoding="utf-8") as fh:
         for key, value in outputs.items():
             fh.write(f"{key}={json.dumps(value, separators=(',', ':'))}\n")
 

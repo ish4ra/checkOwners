@@ -60,7 +60,7 @@ def _no_blame(
     _paths: object,
     _root: Path,
     *,
-    on_progress: object = None,
+    on_progress: object = None,  # noqa: ARG001
 ) -> dict[str, dict[str, float]]:
     return {}
 
@@ -455,7 +455,7 @@ def test_unqualified_paths_not_blamed() -> None:
         paths: Iterable[str],
         _root: Path,
         *,
-        on_progress: object = None,
+        on_progress: object = None,  # noqa: ARG001
     ) -> dict[str, dict[str, float]]:
         blamed.extend(paths)
         return {}
@@ -480,7 +480,7 @@ def test_progress_hook_reports_blame_progress() -> None:
     updates: list[tuple[int, int]] = []
     blame_stdout = "abc 1 1 1\nauthor Alice\nauthor-mail <alice@example.com>\n\tline\n"
 
-    def fake_git(cmd: list[str], **kwargs: object) -> object:
+    def fake_git(cmd: list[str], **_kwargs: object) -> object:
         if "blame" in cmd:
             return _mock_run(blame_stdout)
         return _mock_run(stdout)

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import urllib.error
+import urllib.parse
 import urllib.request
 from typing import Any
 
@@ -105,17 +106,20 @@ def _post_webhook(url: str, payload: dict[str, Any]) -> bool:
     Returns True on success, False on any network/HTTP failure. A failed
     delivery never raises.
     """
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        logger.warning("Webhook URL scheme %s is not http or https", parsed.scheme)
+        return False
     data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
+    req = urllib.request.Request(  # noqa: S310  # scheme restricted to http/https above
         url,
         data=data,
         headers={"Content-Type": "application/json"},
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=30):  # noqa: S310
-            pass
+        with urllib.request.urlopen(req, timeout=30):  # noqa: S310  # scheme restricted to http/https above
+            return True
     except (urllib.error.URLError, OSError) as exc:
         logger.warning("Webhook POST to %s failed: %s", url, exc)
         return False
-    return True

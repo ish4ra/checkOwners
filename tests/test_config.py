@@ -200,7 +200,7 @@ def test_drift_mode_literal(tmp_path: Path) -> None:
 
 def test_drift_mode_invalid_rejected(tmp_path: Path) -> None:
     root = _write_config(tmp_path, "drift:\n  mode: nonsense\n")
-    with pytest.raises(ValueError, match="Invalid drift.mode"):
+    with pytest.raises(ValueError, match=r"Invalid drift\.mode"):
         load_config(repo_root=root)
 
 
@@ -267,7 +267,7 @@ def test_webhook_url_literal_passthrough(tmp_path: Path) -> None:
 
 def test_severity_threshold_invalid_rejected(tmp_path: Path) -> None:
     root = _write_config(tmp_path, "notifications:\n  severity_threshold: extreme\n")
-    with pytest.raises(ValueError, match="Invalid notifications.severity_threshold"):
+    with pytest.raises(ValueError, match=r"Invalid notifications\.severity_threshold"):
         load_config(repo_root=root)
 
 
@@ -289,7 +289,7 @@ def test_load_config_github_section(tmp_path: Path) -> None:
 
 def test_load_config_github_token_rejected(tmp_path: Path) -> None:
     root = _write_config(tmp_path, "github:\n  token: ghp_secret\n")
-    with pytest.raises(ValueError, match="github.token is not accepted"):
+    with pytest.raises(ValueError, match=r"github\.token is not accepted"):
         load_config(repo_root=root)
 
 
