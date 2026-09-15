@@ -11,16 +11,16 @@ pip install hatch
 hatch run test
 ```
 
-`hatch run test` builds the env, installs the optional `[graph]` extra, runs the suite with coverage, and prints any missing-line report. Everything else (lint, format, build) flows through the same environment.
+`hatch run test` builds the env, installs the optional `[graph]` extra, runs the suite with coverage, fails if total coverage is below 85%, and prints a branch-coverage report for `patterns.py`, `analyze.py`, `drift.py`, and `generate.py`. Everything else (lint, format, build) flows through the same environment.
 
 ## Common commands
 
 | Command | What it does |
 |---------|--------------|
-| `hatch run test` | pytest with coverage; target is 85% or higher |
-| `hatch run test -- tests/test_analyze.py` | run a single test file |
-| `hatch run test -- -k "test_name"` | run tests matching a substring |
-| `hatch run lint` | ruff check + mypy `--strict` |
+| `hatch run test` | pytest with coverage; CI fails below 85% |
+| `hatch run test -- tests/test_analyze.py --no-cov` | run a single test file without the coverage floor |
+| `hatch run test -- -k "test_name" --no-cov` | run tests matching a substring without the coverage floor |
+| `hatch run lint` | ruff check (including S and PTH) + mypy `--strict` |
 | `hatch run fmt` | ruff format |
 | `hatch build` | produce sdist and wheel in `dist/` |
 
@@ -69,7 +69,7 @@ Scopes match module names (`analyze`, `drift`, `cli`, etc.) or umbrella areas (`
 - Python 3.11 minimum. Use modern syntax (`X | Y` unions, `dict[str, int]`).
 - Functional style. The only classes allowed are dataclasses in `models.py` and small frozen dataclasses living inside the module that returns them.
 - Type hints on **every** function signature; `mypy --strict` is enforced.
-- All paths via `pathlib.Path`; never hardcode strings.
+- All paths via `pathlib.Path`; never hardcode strings. Ruff `PTH` enforces this.
 - New CLI subcommand? Wire it in `cli.py`, give it a `--json` mode, and persist results through `state.write_state` when appropriate.
 - Ownership is never binary: every owner carries a confidence score, clamped to `[0.0, 1.0]`.
 
@@ -80,7 +80,7 @@ For the architecture overview and module map, see [CLAUDE.md](../CLAUDE.md).
 - Every module has a `tests/test_<module>.py`.
 - Unit tests mock all subprocess calls (`git log`, `git blame`); they must not require a real git repo.
 - Tests that touch `~/.checkowners/state.json` set the `CHECKOWNERS_STATE_DIR` env var so they don't clobber the contributor's real state.
-- Coverage target is 85% repo-wide; new modules should land above that.
+- Coverage is enforced at 85% repo-wide (`--cov-fail-under=85`); new modules should land above that. The floor is a gate, not a substitute for tests against real git repositories and real CODEOWNERS files. For a focused run that should not apply the floor, pass `--no-cov`.
 
 ## Reporting bugs
 

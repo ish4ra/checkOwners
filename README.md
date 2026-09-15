@@ -1,8 +1,9 @@
 # CheckOwners
 
 [![CI](https://github.com/smusali/checkowners/actions/workflows/ci.yml/badge.svg)](https://github.com/smusali/checkowners/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/smusali/checkowners/graph/badge.svg)](https://codecov.io/gh/smusali/checkowners)
 [![PyPI](https://img.shields.io/pypi/v/checkowners.svg)](https://pypi.org/project/checkowners/)
-[![PyPI downloads](https://img.shields.io/pypi/dm/checkowners.svg)](https://pypi.org/project/checkowners/)
+[![PyPI downloads](https://static.pepy.tech/badge/checkowners/month)](https://pepy.tech/project/checkowners)
 [![Python versions](https://img.shields.io/pypi/pyversions/checkowners.svg)](https://pypi.org/project/checkowners/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/smusali/checkowners/blob/main/LICENSE)
 

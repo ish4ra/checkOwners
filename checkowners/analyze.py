@@ -116,7 +116,12 @@ def _build_path_ownerships(
         path_blame = blame_coverage.get(path, {})
         path_review = review_coverage.get(path, {})
         entries = _score_owners(
-            qualified, path_blame, path_review, max_commits, config.scoring, now
+            qualified,
+            path_blame,
+            path_review,
+            max_commits=max_commits,
+            scoring=config.scoring,
+            now=now,
         )
         filtered = tuple(e for e in entries if e.confidence >= config.analysis.confidence_threshold)
         if not filtered:
@@ -136,6 +141,7 @@ def _score_owners(
     qualified: dict[str, _Contribution],
     path_blame: dict[str, float],
     path_review: dict[str, float],
+    *,
     max_commits: int,
     scoring: ScoringConfig,
     now: datetime,
@@ -221,8 +227,8 @@ def _count_qualified_owners(top: tuple[OwnerEntry, ...], threshold: float) -> in
 
 def _get_commit_history(repo_root: Path, since_days: int) -> list[_RawCommit]:
     """Run git log and parse (author, timestamp, files) triples."""
-    result = subprocess.run(
-        [
+    result = subprocess.run(  # noqa: S603  # literal git argv, no shell
+        [  # noqa: S607  # git from PATH; not user-supplied
             "git",
             "log",
             f"--format={_COMMIT_SENTINEL}%n%ae%n%cI",
@@ -231,7 +237,7 @@ def _get_commit_history(repo_root: Path, since_days: int) -> list[_RawCommit]:
         ],
         capture_output=True,
         text=True,
-        cwd=str(repo_root),
+        cwd=repo_root,
         check=True,
     )
     return _parse_log_output(result.stdout)
@@ -375,13 +381,13 @@ def _gather_blame_coverage(
 def _blame_for_path(repo_root: Path, path: str) -> dict[str, float]:
     """Run `git blame --line-porcelain` on a single path; return coverage fractions."""
     try:
-        result = subprocess.run(
-            ["git", "blame", "--line-porcelain", "--", path],
+        result = subprocess.run(  # noqa: S603  # literal git argv, no shell
+            ["git", "blame", "--line-porcelain", "--", path],  # noqa: S607  # git from PATH; path follows --
             capture_output=True,
             text=True,
             encoding="utf-8",
             errors="replace",
-            cwd=str(repo_root),
+            cwd=repo_root,
             check=True,
         )
     except subprocess.CalledProcessError:

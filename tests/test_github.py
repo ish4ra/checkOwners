@@ -10,7 +10,9 @@ from checkowners.github import (
     get_github_client,
     get_github_token,
     resolve_handles,
+    resolve_noreply_handle,
 )
+from checkowners.state import read_handle_cache, write_handle_cache
 
 
 def test_get_github_token_present() -> None:
@@ -186,20 +188,14 @@ def test_create_team_resolver_no_org() -> None:
 
 
 def test_resolve_noreply_handle_current_form() -> None:
-    from checkowners.github import resolve_noreply_handle
-
     assert resolve_noreply_handle("12345+octo-cat@users.noreply.github.com") == "@octo-cat"
 
 
 def test_resolve_noreply_handle_legacy_form() -> None:
-    from checkowners.github import resolve_noreply_handle
-
     assert resolve_noreply_handle("octocat@users.noreply.github.com") == "@octocat"
 
 
 def test_resolve_noreply_handle_rejects_other_emails() -> None:
-    from checkowners.github import resolve_noreply_handle
-
     assert resolve_noreply_handle("alice@example.com") is None
     assert resolve_noreply_handle("x@users.noreply.github.com.evil.com") is None
 
@@ -211,8 +207,6 @@ def test_resolve_handles_noreply_without_token() -> None:
 
 
 def test_resolve_handles_uses_disk_cache_before_api() -> None:
-    from checkowners.state import write_handle_cache
-
     write_handle_cache({"alice@example.com": "@alice"})
     mock_client = MagicMock()
     with patch("checkowners.github.get_github_client", return_value=mock_client):
@@ -222,8 +216,6 @@ def test_resolve_handles_uses_disk_cache_before_api() -> None:
 
 
 def test_resolve_handles_remembers_misses() -> None:
-    from checkowners.state import read_handle_cache
-
     mock_client = MagicMock()
     mock_client.search_users.return_value = []
     with patch("checkowners.github.get_github_client", return_value=mock_client):

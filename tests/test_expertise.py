@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
+from checkowners.busfactor import compute_qualified_owners
 from checkowners.expertise import path_matches_glob, rank_expertise
-from checkowners.models import OwnerEntry, OwnershipMap, PathOwnership
+from checkowners.models import AnalysisConfig, Config, OwnerEntry, OwnershipMap, PathOwnership
+from checkowners.onboard import generate_onboarding_path
 
 _NOW = datetime(2026, 5, 28, 12, 0, 0, tzinfo=UTC)
 
@@ -115,10 +117,6 @@ def test_path_matches_glob_leading_slash_normalized() -> None:
 
 def test_path_matches_glob_consistent_across_modules() -> None:
     """busfactor and onboard target matching share this exact helper."""
-    from checkowners.busfactor import compute_qualified_owners
-    from checkowners.models import AnalysisConfig, Config
-    from checkowners.onboard import generate_onboarding_path
-
     ownership = _ownership(
         {
             "controllers/user.py": (_entry("@alice", 0.9),),

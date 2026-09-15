@@ -28,7 +28,7 @@ class _HrefCollector(HTMLParser):
         super().__init__()
         self.urls: list[str] = []
 
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+    def handle_starttag(self, _tag: str, attrs: list[tuple[str, str | None]]) -> None:
         for key, value in attrs:
             if key in {"href", "src"} and value:
                 self.urls.append(value)

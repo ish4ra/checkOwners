@@ -90,7 +90,10 @@ dependencies = [
 ]
 
 [tool.hatch.envs.default.scripts]
-test = "pytest {args:tests/ --cov=checkowners --cov-report=term-missing}"
+test = [
+    "pytest {args:tests/}",
+    "coverage report --include=checkowners/patterns.py,checkowners/analyze.py,checkowners/drift.py,checkowners/generate.py --show-missing",
+]
 lint = ["ruff check .", "mypy --strict checkowners/"]
 fmt = "ruff format ."
 
@@ -99,7 +102,21 @@ target-version = "py311"
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP", "ANN", "B", "A", "SIM"]
+# S (bandit) and PTH (pathlib) are first-class: the core is subprocess git
+# with user-supplied paths. RUF, C4, PL, ARG, TID, ERA are the second pass.
+select = [
+    "E", "F", "I", "N", "W", "UP", "ANN", "B", "A", "SIM",
+    "S", "PTH", "RUF", "C4", "PL", "ARG", "TID", "ERA",
+]
+# PLR complexity metrics (arg counts, magic values, statement counts) follow
+# the CLI and dataclass surfaces; ratcheting them is not a safety win.
+ignore = ["PLR0913", "PLR0917", "PLR2004", "PLR0915", "PLR0911", "PLR0912"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101", "S105", "S106", "S108", "S404"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -114,6 +131,20 @@ python_version = "3.11"
 module = "networkx.*"
 ignore_missing_imports = true
 
+[tool.coverage.run]
+source = ["checkowners"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--strict-markers"
+addopts = [
+    "--strict-markers",
+    "--cov=checkowners",
+    "--cov-branch",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+    "--cov-fail-under=85",
+]

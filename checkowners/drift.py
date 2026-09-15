@@ -78,10 +78,10 @@ def _tracked_files(repo_root: Path) -> tuple[str, ...]:
     """List tracked files; used to tell dead rules from merely quiet ones."""
     try:
         result = subprocess.run(
-            ["git", "ls-files"],
+            ["git", "ls-files"],  # noqa: S607  # git from PATH; argv is a literal list
             capture_output=True,
             text=True,
-            cwd=str(repo_root),
+            cwd=repo_root,
             check=True,
         )
     except (subprocess.CalledProcessError, OSError):
@@ -284,7 +284,7 @@ def _write_github_output(result: DriftResult, cap: int) -> None:
             "notes": list(result.notes),
         }
     )
-    with open(output_file, "a", encoding="utf-8") as f:
+    with Path(output_file).open("a", encoding="utf-8") as f:
         f.write(f"checkowners_drift={payload}\n")
 
 

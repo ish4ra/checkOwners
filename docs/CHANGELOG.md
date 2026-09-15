@@ -9,6 +9,12 @@ Each dated heading is the UTC calendar day that version was published to PyPI (`
 ## [Unreleased]
 
 ### Added
+- pytest `--cov-fail-under=85` so CI fails below the documented coverage
+  floor. Branch coverage is collected repo-wide and reported for
+  `patterns.py`, `analyze.py`, `drift.py`, and `generate.py`.
+- Ruff enables `S` (bandit), `PTH` (pathlib), `RUF`, `C4`, `PL`, `ARG`,
+  `TID`, and `ERA`.
+- Coverage badge on the README pointing at `smusali/checkowners`.
 - Composite Action input `max_output_entries` (default 50) caps each list
   in the `GITHUB_OUTPUT` summaries. Full `drift.json`, `bus_factor.json`,
   and `decay.json` payloads are uploaded as the `checkowners-reports`
@@ -27,6 +33,10 @@ Each dated heading is the UTC calendar day that version was published to PyPI (`
   or lockfile disagree with each other (or with the release tag).
 
 ### Fixed
+- README monthly-download badge uses pepy.tech instead of shields.io
+  `pypi/dm`, which was rendering "rate limited by upstream service".
+- CI pip installs retry with a longer timeout, and hatch env creation
+  retries on transient PyPI index failures.
 - The Action PR-comment lookup paginates past 100 comments, so the
   managed comment is updated instead of duplicated. Interpolated
   paths, notes, and reasons are escaped, long paths are truncated,

@@ -65,7 +65,7 @@ def test_existing_id_finds_marker_on_second_page() -> None:
     page1 = [{"id": index, "body": f"other {index}"} for index in range(100)]
     page2 = [{"id": 4242, "body": f"{MARKER}\nreport"}]
 
-    def side_effect(req: urllib.request.Request, timeout: int = 30) -> MagicMock:
+    def side_effect(req: urllib.request.Request, timeout: int = 30) -> MagicMock:  # noqa: ARG001
         if "page=2" in req.full_url:
             return _json_resp(page2)
         return _json_resp(page1)
@@ -80,7 +80,7 @@ def test_existing_id_finds_marker_on_second_page() -> None:
 def test_existing_id_returns_none_after_short_page() -> None:
     page = [{"id": 1, "body": "nope"}]
 
-    def side_effect(req: urllib.request.Request, timeout: int = 30) -> MagicMock:
+    def side_effect(req: urllib.request.Request, timeout: int = 30) -> MagicMock:  # noqa: ARG001
         return _json_resp(page)
 
     with patch("comment_on_pr.urllib.request.urlopen", side_effect=side_effect) as mocked:

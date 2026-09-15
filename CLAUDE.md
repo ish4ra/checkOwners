@@ -9,12 +9,12 @@ checkOwners: a CODEOWNERS inference engine driven by git commit history with con
 ## Commands
 
 ```bash
-hatch run test                          # pytest with coverage (85%+ target)
-hatch run test -- tests/test_analyze.py # single test file
-hatch run test -- -k "test_name"        # single test by name
-hatch run lint                          # ruff check + mypy --strict
-hatch run fmt                           # ruff format
-hatch build                             # sdist + wheel in dist/
+hatch run test                                # pytest with coverage; fails below 85%
+hatch run test -- tests/test_analyze.py --no-cov  # single file without the floor
+hatch run test -- -k "test_name" --no-cov     # single test by name without the floor
+hatch run lint                                # ruff check (S, PTH, ...) + mypy --strict
+hatch run fmt                                 # ruff format
+hatch build                                   # sdist + wheel in dist/
 ```
 
 CLI entry point is `checkowners` (Typer app in `checkowners/cli.py`):
@@ -77,7 +77,7 @@ Key data flow: `config.py` loads `.github/checkowners.yml` + auto-detects CODEOW
 
 - Functional style throughout; no classes except dataclasses in `models.py` (and small frozen dataclasses inside modules for return types)
 - Type hints on every function signature; strict mypy (`--strict`)
-- All file paths via `pathlib.Path`, never hardcoded strings
+- All file paths via `pathlib.Path`, never hardcoded strings (ruff `PTH`)
 - All CLI commands support `--json` for structured JSON output
 - Config file: `.github/checkowners.yml` (per-repo; loaded via `config.py`)
 - State: per-repo file at `~/.checkowners/state/<repo-hash>.json`, schema v4 (auto-maintained; never hardcode the path, use `state.py`; override the base dir via `CHECKOWNERS_STATE_DIR` for tests)
@@ -98,7 +98,7 @@ Key data flow: `config.py` loads `.github/checkowners.yml` + auto-detects CODEOW
 - Unit tests mock all subprocess calls (`git log`, `git blame`); never require a real git repo
 - Every module has a corresponding `tests/test_<module>.py`
 - `state.py` tests isolate `~/.checkowners` via the `CHECKOWNERS_STATE_DIR` env var
-- Coverage target: 85%+ across the project
+- Coverage is enforced at 85% repo-wide (`--cov-fail-under=85`); branch coverage is reported for `patterns.py`, `analyze.py`, `drift.py`, and `generate.py`. The floor does not replace tests against real git repositories.
 
 ## Do NOT
 

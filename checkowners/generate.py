@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+from checkowners.github import create_team_resolver
 from checkowners.models import Config, OwnerEntry, OwnershipMap
 
 _DEFAULT_CODEOWNERS_PATH = ".github/CODEOWNERS"
@@ -85,8 +86,6 @@ def _build_codeowners_content(
 
     team_resolve: Callable[[tuple[str, ...]], str | None] | None = None
     if config.github.resolve_teams and token and org:
-        from checkowners.github import create_team_resolver
-
         team_resolve = create_team_resolver(token, org)
 
     for row in rows:

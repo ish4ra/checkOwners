@@ -261,7 +261,7 @@ Advanced install inputs:
 See [docs/CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor guide. Common commands:
 
 ```bash
-hatch run test              # pytest with coverage
+hatch run test              # pytest with coverage; fails below 85%
 hatch run lint              # ruff check + mypy --strict
 hatch run fmt               # ruff format
 hatch build                 # sdist + wheel in dist/
